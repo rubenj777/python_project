@@ -1,3 +1,4 @@
 env/
 *.pyc
 database.db
+__pycache__/
