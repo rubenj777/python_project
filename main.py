@@ -9,8 +9,15 @@ def create_app():
 
     db.init_app(app)
 
-    def get_patient():
+    def insert():
+        con = db.get_db()
+        cur = con.cursor()
+        cur.execute(
+            "INSERT INTO patient VALUES ('id', 'coucou', 'ruben', 'rub', 'password')"
+        )
+        con.commit()
 
+    def get_all_patients():
         con = db.get_db()
         cur = con.cursor()
         res = cur.execute("SELECT firstName, lastName, username FROM patient")
@@ -18,13 +25,11 @@ def create_app():
         db.close_db()
         return firstName, lastName, username
 
+   
+
     @app.route("/")
     def index():
-        # con = db.get_db()
-        # cur = con.cursor()
-        # cur.execute("INSERT INTO patient VALUES ('id', 'coucou', 'ruben', 'rub', 'password')")
-        # con.commit()
-        firstName, lastName, username = get_patient()
+        firstName, lastName, username = get_all_patients()
 
         return render_template(
             "index.html", firstName=firstName, lastName=lastName, username=username
