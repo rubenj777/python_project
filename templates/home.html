@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+<body>
+    <div class="container">
+        <div id="sidebar">
+            <p>bonjour</p>
+        </div>
+
+        <div id="content">
+            <h2>Patient's list :</h2>
+            {% for patient in patients %}
+            <div class="patient-infos">
+                <ul>
+                    <li>First name : {{ patient.firstName }}</li>
+                    <li>Last name : {{ patient.lastName }}</li>
+                    <li>Email : {{ patient.email }}</li>
+                    <li>Phone : {{ patient.phone }}</li>
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+
+    <style>
+        .container {
+            display: flex;
+        }
+
+        #sidebar {
+            margin: 0;
+            width: 25%;
+            background-color: red;
+        }
+
+        #content {
+            margin: 0;
+            width: 75%;
+            background-color: aqua;
+        }
+
+        .patient-infos {
+            margin:15px;
+            border: 1px black solid;
+        }
+    </style>
+</body>
+
+</html>
