@@ -1,59 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "layout.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
+{% block content %}
 
-<body>
-    <div class="container">
-        <div id="sidebar">
-            <p>bonjour</p>
+<div id="sidebar">
+
+</div>
+
+<div id="content">
+
+    {% if session["role"] == 1 %}
+
+    <h3 class="mb-4 mt-5">Fix an appointment :</h3>
+    <form action="/book" method="POST">
+        <div class="form-group">
+            <select class="form-select form-select-lg mb-3" name="doctor_id">
+                <option selected>Select a doctor</option>
+                {% for doctor in doctors %}
+                <option value="{{ doctor.id }}">Dr. {{ doctor.firstName }} {{ doctor.lastName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <textarea name="cause" placeholder="What's the matter ?"></textarea>
+        </div>
+        <div class="form-group">
+            <input type="datetime-local" name="datetime">
+        </div>
+        <div class="form-group">
+            <input type="hidden" value="{{ logged_user_id }}" name="logged_user_id">
+            <button class="btn btn-secondary" type="submit">Book</button>
         </div>
 
-        <div id="content">
-            <h2>Patient's list :</h2>
-            {% for patient in patients %}
-            <div class="patient-infos">
-                <ul>
-                    <li>First name : {{ patient.firstName }}</li>
-                    <li>Last name : {{ patient.lastName }}</li>
-                    <li>Email : {{ patient.email }}</li>
-                    <li>Phone : {{ patient.phone }}</li>
-                </ul>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+    </form>
 
 
+    {% elif session["role"] == 2 %}
+    <h2>users list :</h2>
+    {% for user in users %}
+    <p>{{ user.username }}, {{ user.password }}, {{ user.id }}</p>
+    {% endfor %}
+
+    <h2>appointments list :</h2>
+    {% for appointment in appointments %}
+    <p>{{ appointment.user_id }}</p>
+    {% endfor %}
+    {% endif %}
 
 
-    <style>
-        .container {
-            display: flex;
-        }
+</div>
 
-        #sidebar {
-            margin: 0;
-            width: 25%;
-            background-color: red;
-        }
-
-        #content {
-            margin: 0;
-            width: 75%;
-            background-color: aqua;
-        }
-
-        .patient-infos {
-            margin:15px;
-            border: 1px black solid;
-        }
-    </style>
-</body>
-
-</html>
+{% endblock %}

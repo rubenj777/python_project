@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% if not session["loggedIn"] %}
+<h2>Please login to continue</h2>
+{% else %}
+<div class="d-flex align-items-center">
+    <p class="mr-4 text-light">Hello, {{ session["username"] }}</p>
+    <form action="/logout" method="POST">
+        <button class="btn btn-danger" type="submit">Logout</button>
+    </form>
+</div>
+{% endif %}
+
+{% endblock %}
