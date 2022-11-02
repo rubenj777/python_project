@@ -34,14 +34,25 @@ def create_app():
         db.close_db()
         return users
 
-    def get_all_appointments():
+    def user_get_all_appointments():
         con = db.get_db()
         cur = con.cursor()
-        res = cur.execute("SELECT * FROM appointment ")
+        res = cur.execute(
+            "SELECT a.user_id, a.doc_id, a.appointment_time, a.cause, u.firstName, u.lastName, u.email, u.phone, u.specialization FROM appointment a INNER JOIN app_user u ON a.doc_id = u.id"
+        )
         appointments = res.fetchall()
         db.close_db()
         return appointments
 
+    def doc_get_all_appointments():
+        con = db.get_db()
+        cur = con.cursor()
+        res = cur.execute(
+            "SELECT a.user_id, a.doc_id, a.appointment_time, a.cause, u.firstName, u.lastName, u.address, u.email, u.phone FROM appointment a INNER JOIN app_user u ON a.user_id = u.id"
+        )
+        appointments = res.fetchall()
+        db.close_db()
+        return appointments
 
     def get_all_doctors():
         con = db.get_db()
@@ -50,14 +61,6 @@ def create_app():
         doctors = res.fetchall()
         db.close_db()
         return doctors
-
-    # def get_all_appointments():
-    #     con = db.get_db()
-    #     cur = con.cursor()
-    #     res = cur.execute("SELECT visit.appointment_time, visit.cause, patient.username FROM visit INNER JOIN patient ON visit.id = patient.id WHERE id_1=? ORDER BY appointment_time DESC", (get_id()))
-    #     visits = res.fetchall()
-    #     db.close_db()
-    #     return visits
 
     @app.route("/")
     def index():
@@ -102,18 +105,30 @@ def create_app():
         if "loggedIn" not in session:
             return redirect("/")
         else:
-            # insert_visit()
-            logged_user_id = get_id()
-            doctors = get_all_doctors()
-            appointments = get_all_appointments()
-            users = get_all_users()
-            return render_template(
-                "home.html",
-                users=users,
-                appointments=appointments,
-                doctors=doctors,
-                logged_user_id=logged_user_id,
-            )
+            if session["role"] == 1:
+                logged_user_id = get_id()
+                doctors = get_all_doctors()
+                appointments = user_get_all_appointments()
+                users = get_all_users()
+                return render_template(
+                    "home.html",
+                    users=users,
+                    appointments=appointments,
+                    doctors=doctors,
+                    logged_user_id=logged_user_id,
+                )
+            else:
+                logged_user_id = get_id()
+                doctors = get_all_doctors()
+                appointments = doc_get_all_appointments()
+                users = get_all_users()
+                return render_template(
+                    "home.html",
+                    users=users,
+                    appointments=appointments,
+                    doctors=doctors,
+                    logged_user_id=logged_user_id,
+                )
 
     @app.route("/book", methods=["GET", "POST"])
     def book():
@@ -124,7 +139,13 @@ def create_app():
         con = db.get_db()
         cur = con.cursor()
         cur.execute(
-            "INSERT INTO appointment ('user_id', 'doc_id', 'appointment_time', 'cause') VALUES (?, ?, ?, ?)", (logged_user_id, doctor_id, datetime, cause,)
+            "INSERT INTO appointment ('user_id', 'doc_id', 'appointment_time', 'cause') VALUES (?, ?, ?, ?)",
+            (
+                logged_user_id,
+                doctor_id,
+                datetime,
+                cause,
+            ),
         )
         con.commit()
         return redirect("/home")
