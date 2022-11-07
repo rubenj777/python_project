@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS appointment(
 );
 
 
-INSERT INTO app_user ('firstName', 'lastName', 'username', 'password', 'address', 'email', 'phone', 'role') VALUES ('ruben', 'jallifier', 'rub', 'mdp', 'lyon', 'mail', '06', '1');
-INSERT INTO app_user ('firstName', 'lastName', 'username', 'password', 'address', 'email', 'phone', 'role') VALUES ('docteur', 'jean', 'jean', 'mdp', 'lyon', 'mail', '06', '2');
+-- INSERT INTO app_user ('firstName', 'lastName', 'username', 'password', 'address', 'email', 'phone', 'role') VALUES ('ruben', 'jallifier', 'rub', 'mdp', 'lyon', 'mail', '06', '1');
+-- INSERT INTO app_user ('firstName', 'lastName', 'username', 'password', 'address', 'email', 'phone', 'role') VALUES ('docteur', 'jean', 'jean', 'mdp', 'lyon', 'mail', '06', '2');
 
 

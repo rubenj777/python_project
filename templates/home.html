@@ -32,18 +32,26 @@
         </div>
 
     </form>
-
+    <h3>Upcoming appointments :</h3>
+    {% for appointment in appointments %}
+    <div>
+        <p>{{ appointment.appointment_time }}</p>
+        <p>{{ appointment.firstName }} {{ appointment.lastName }}, {{ appointment.specialization }}</p>
+    </div>
+    {% endfor %}
 
     {% elif session["role"] == 2 %}
-    <h2>users list :</h2>
-    {% for user in users %}
-    <p>{{ user.username }}, {{ user.password }}, {{ user.id }}</p>
+
+    <h3>Upcoming appointments :</h3>
+    {% for appointment in appointments %}
+    <div>
+        <p>{{ appointment.appointment_time }}</p>
+        <p>{{ appointment.firstName }} {{ appointment.lastName }}</p>
+        <p>{{ appointment.cause }}</p>
+    </div>
+    
     {% endfor %}
 
-    <h2>appointments list :</h2>
-    {% for appointment in appointments %}
-    <p>{{ appointment.user_id }}</p>
-    {% endfor %}
     {% endif %}
 
 
