@@ -1,82 +1,98 @@
-import os
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    current_app,
+)
 from datetime import datetime
+import sqlite3, click, os
+
+
+def convert_datetime(val):
+    return datetime.fromisoformat(val.decode())
+
+
+def get_db():
+    con = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES)
+    sqlite3.register_converter("datetime", convert_datetime)
+    con.row_factory = sqlite3.Row
+    return con
+
+
+def close_db(e=None):
+    con = get_db()
+    con.close()
+
+
+def init_db():
+    db = get_db()
+    with current_app.open_resource("database.sql") as f:
+        db.executescript(f.read().decode("utf8"))
+
+
+@click.command("init-db")
+def init_db_command():
+    init_db()
+    click.echo("Initialized the database.")
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
 
 
 def create_app():
     app = Flask(__name__)
     app.secret_key = os.urandom(24)
 
-    import db
-
-    db.init_app(app)
+    init_app(app)
 
     def date(d):
-        d = datetime.strptime(d,"%Y-%m-%dT%H:%M")
-        d.strftime("%d-%m-%Y %H%M")
-        return d
+        return d.strftime("%A, %d. %B %Y %I:%M%p")
 
     app.add_template_filter(date)
+
+    def get_now():
+        now = datetime.now()
+        return now
 
     def get_id():
         id = session["id"]
         return id
 
-    def get_role():
-        role = session["role"]
-        return role
-
-    def who_am_i():
-        con = db.get_db()
-        cur = con.cursor()
-        res = cur.execute("SELECT * FROM app_user WHERE id=?", (get_id(),))
-        me = res.fetchone()
-        db.close_db()
-        return me
-
-    def get_all_users():
-        con = db.get_db()
-        cur = con.cursor()
-        res = cur.execute("SELECT * FROM app_user")
-        users = res.fetchall()
-        db.close_db()
-        return users
-
     def get_all_appointments():
-        con = db.get_db()
+        con = get_db()
         cur = con.cursor()
-        res = cur.execute("SELECT appointment_time FROM appointment")
+        if session["role"] == 2:
+            res = cur.execute(
+                "SELECT a.user_id, a.doc_id, a.appointment_time, a.cause, u.firstName, u.lastName, u.address, u.email, u.phone FROM appointment a INNER JOIN app_user u ON a.user_id = u.id ORDER BY a.appointment_time ASC"
+            )
+        if session["role"] == 1:
+            res = cur.execute(
+                "SELECT a.user_id, a.doc_id, a.appointment_time, a.cause, u.firstName, u.lastName, u.email, u.phone, u.specialization FROM appointment a INNER JOIN app_user u ON a.doc_id = u.id ORDER BY a.appointment_time ASC"
+            )
         appointments = res.fetchall()
-        db.close_db()
-        return appointments
-
-    def user_get_all_appointments():
-        con = db.get_db()
-        cur = con.cursor()
-        res = cur.execute(
-            "SELECT a.user_id, a.doc_id, a.appointment_time, a.cause, u.firstName, u.lastName, u.email, u.phone, u.specialization FROM appointment a INNER JOIN app_user u ON a.doc_id = u.id"
+        now = get_now()
+        close_db()
+        return (
+            appointments,
+            now,
         )
-        appointments = res.fetchall()
-        db.close_db()
-        return appointments
-
-    def doc_get_all_appointments():
-        con = db.get_db()
-        cur = con.cursor()
-        res = cur.execute(
-            "SELECT a.user_id, a.doc_id, a.appointment_time, a.cause, u.firstName, u.lastName, u.address, u.email, u.phone FROM appointment a INNER JOIN app_user u ON a.user_id = u.id"
-        )
-        appointments = res.fetchall()
-        db.close_db()
-        return appointments
 
     def get_all_doctors():
-        con = db.get_db()
+        con = get_db()
         cur = con.cursor()
         res = cur.execute("SELECT * FROM app_user WHERE role=2")
         doctors = res.fetchall()
-        db.close_db()
+        close_db()
         return doctors
+
+    ###########################
+    ######### ROUTES ##########
+    ###########################
 
     @app.route("/")
     def index():
@@ -90,14 +106,14 @@ def create_app():
         if request.method == "POST":
             username = request.form["username"]
             password = request.form["password"]
-            con = db.get_db()
+            con = get_db()
             cur = con.cursor()
             res = cur.execute(
                 "SELECT * FROM app_user WHERE username=? AND password=?",
                 (username, password),
             )
             user = res.fetchone()
-            db.close_db()
+            close_db()
 
             if user:
                 session["loggedIn"] = True
@@ -123,29 +139,18 @@ def create_app():
         if "loggedIn" not in session:
             return redirect("/")
         else:
-            # delete_appointment_when_passed()
-            if session["role"] == 1:
-                logged_user_id = get_id()
-                doctors = get_all_doctors()
-                appointments = user_get_all_appointments()
-                return render_template(
-                    "home.html",
-                    appointments=appointments,
-                    doctors=doctors,
-                    logged_user_id=logged_user_id,
-                )
-            else:
-                logged_user_id = get_id()
-                doctors = get_all_doctors()
-                appointments = doc_get_all_appointments()
-                users = get_all_users()
-                return render_template(
-                    "home.html",
-                    users=users,
-                    appointments=appointments,
-                    doctors=doctors,
-                    logged_user_id=logged_user_id,
-                )
+            logged_user_id = get_id()
+            doctors = get_all_doctors()
+            appointments, now = get_all_appointments()
+            my_id = get_id()
+            return render_template(
+                "home.html",
+                appointments=appointments,
+                now=now,
+                doctors=doctors,
+                logged_user_id=logged_user_id,
+                my_id=my_id,
+            )
 
     @app.route("/book", methods=["GET", "POST"])
     def book():
@@ -153,7 +158,7 @@ def create_app():
         cause = request.form["cause"]
         datetime = request.form["datetime"]
         logged_user_id = request.form["logged_user_id"]
-        con = db.get_db()
+        con = get_db()
         cur = con.cursor()
         cur.execute(
             "REPLACE INTO appointment ('user_id', 'doc_id', 'appointment_time', 'cause') VALUES (?, ?, ?, ?)",
@@ -165,18 +170,7 @@ def create_app():
             ),
         )
         con.commit()
-        db.close_db()
+        close_db()
         return redirect("/home")
-
-    # def delete_appointment_when_passed():
-    #     con = db.get_db()
-    #     cur = con.cursor()
-    #     cur.execute(
-    #         "DELETE FROM 'appointment' WHERE 'appointment_time' < datetime('now')"
-    #     )
-    #     con.commit()
-    #     db.close_db()
-
-    # delete_appointment_when_passed()
 
     return app

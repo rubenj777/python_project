@@ -8,8 +8,12 @@
 
 <div id="content">
 
+    <!--------------------->
+    <!-- PATIENT CONTENT -->
+    <!--------------------->
     {% if session["role"] == 1 %}
 
+    <!-- FORM -->
     <h3 class="mb-4 mt-5">Fix an appointment :</h3>
     <form action="/book" method="POST">
         <div class="form-group">
@@ -30,36 +34,73 @@
             <input type="hidden" value="{{ logged_user_id }}" name="logged_user_id">
             <button class="btn btn-secondary" type="submit">Book</button>
         </div>
-
     </form>
-    <p>my id : {{ logged_user_id }}</p>
-    <h3>My appointments :</h3>
-    {% for appointment in appointments %}
+
+    <!-- APPOINTMENTS -->
+    <div class="m-3">
+        <h3>Upcoming appointments :</h3>
+        {% if appointments|length == 0 %}
+        <p>You have no appointment to come.</p>
+        {% else %}
+        {% for appointment in appointments %}
         {% if appointment.user_id == logged_user_id %}
-            <div class="card">
-                <div class="card-body">
-                    <p>{{ appointment.appointment_time | date }}</p>
-                    <p>{{ appointment.firstName }} {{ appointment.lastName }}, {{ appointment.specialization }}</p>
-                </div>
-                
+        {% if now < appointment.appointment_time %} <div class="card m-3">
+            <div class="card-body">
+                <p>{{ appointment.appointment_time | date }}</p>
+                <p>{{ appointment.firstName }} {{ appointment.lastName }}, {{ appointment.specialization }}</p>
             </div>
-        {% endif %}
-    {% endfor %}
-
-    {% elif session["role"] == 2 %}
-
-    <h3>My appointments :</h3>
-    {% for appointment in appointments %}
-    <div>
-        <p>{{ appointment.appointment_time }}</p>
-        <p>{{ appointment.firstName }} {{ appointment.lastName }}</p>
-        <p>{{ appointment.cause }}</p>
     </div>
-    
-    {% endfor %}
-
     {% endif %}
+    {% endif %}
+    {% endfor %}
+    {%endif%}
+</div>
 
+
+<div class="m-3">
+    <h3>Past appointments :</h3>
+    {% for appointment in appointments %}
+    {% if appointment.user_id == logged_user_id %}
+    {% if now > appointment.appointment_time %}
+    <div class="card m-3">
+        <div class="card-body">
+            <p>{{ appointment.appointment_time | date }}</p>
+            <p>{{ appointment.firstName }} {{ appointment.lastName }}, {{ appointment.specialization }}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-------------------->
+<!-- DOCTOR CONTENT -->
+<!-------------------->
+{% elif session["role"] == 2 %}
+
+<!-- APPOINTMENTS -->
+<div class="mt-5">
+
+    <h3>Upcoming appointments :</h3>
+    {% if appointments|length == 0 %}
+    <p>You have no appointment to come.</p>
+    {% else %}
+    {% for appointment in appointments %}
+    {% if appointment.doc_id == logged_user_id %}
+    {% if now < appointment.appointment_time %} <div class="card m-3">
+        <div class="card-body">
+            <p>Patient : {{ appointment.firstName }} {{ appointment.lastName }}</p>
+            <p>Cause : {{ appointment.cause }}</p>
+            <p>{{ appointment.appointment_time | date }}</p>
+        </div>
+</div>
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+</div>
+
+{% endif %}
 
 </div>
 

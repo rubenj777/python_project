@@ -2,7 +2,9 @@
 
 {% block content %}
 {% if not session["loggedIn"] %}
-<h2>Please login to continue</h2>
+<div class="m-5">
+    <h2>Please login to continue</h2>
+</div>
 {% else %}
 <div class="d-flex align-items-center">
     <p class="mr-4 text-light">Hello, {{ session["username"] }}</p>
