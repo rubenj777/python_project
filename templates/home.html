@@ -32,17 +32,23 @@
         </div>
 
     </form>
-    <h3>Upcoming appointments :</h3>
+    <p>my id : {{ logged_user_id }}</p>
+    <h3>My appointments :</h3>
     {% for appointment in appointments %}
-    <div>
-        <p>{{ appointment.appointment_time }}</p>
-        <p>{{ appointment.firstName }} {{ appointment.lastName }}, {{ appointment.specialization }}</p>
-    </div>
+        {% if appointment.user_id == logged_user_id %}
+            <div class="card">
+                <div class="card-body">
+                    <p>{{ appointment.appointment_time | date }}</p>
+                    <p>{{ appointment.firstName }} {{ appointment.lastName }}, {{ appointment.specialization }}</p>
+                </div>
+                
+            </div>
+        {% endif %}
     {% endfor %}
 
     {% elif session["role"] == 2 %}
 
-    <h3>Upcoming appointments :</h3>
+    <h3>My appointments :</h3>
     {% for appointment in appointments %}
     <div>
         <p>{{ appointment.appointment_time }}</p>

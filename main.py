@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, session
+from datetime import datetime
 
 
 def create_app():
@@ -9,6 +10,13 @@ def create_app():
     import db
 
     db.init_app(app)
+
+    def date(d):
+        d = datetime.strptime(d,"%Y-%m-%dT%H:%M")
+        d.strftime("%d-%m-%Y %H%M")
+        return d
+
+    app.add_template_filter(date)
 
     def get_id():
         id = session["id"]
@@ -33,6 +41,14 @@ def create_app():
         users = res.fetchall()
         db.close_db()
         return users
+
+    def get_all_appointments():
+        con = db.get_db()
+        cur = con.cursor()
+        res = cur.execute("SELECT appointment_time FROM appointment")
+        appointments = res.fetchall()
+        db.close_db()
+        return appointments
 
     def user_get_all_appointments():
         con = db.get_db()
@@ -81,6 +97,7 @@ def create_app():
                 (username, password),
             )
             user = res.fetchone()
+            db.close_db()
 
             if user:
                 session["loggedIn"] = True
@@ -90,6 +107,7 @@ def create_app():
                 return redirect("/home")
             else:
                 return redirect("/")
+
         return render_template("index.html")
 
     @app.route("/logout", methods=["GET", "POST"])
@@ -105,14 +123,13 @@ def create_app():
         if "loggedIn" not in session:
             return redirect("/")
         else:
+            # delete_appointment_when_passed()
             if session["role"] == 1:
                 logged_user_id = get_id()
                 doctors = get_all_doctors()
                 appointments = user_get_all_appointments()
-                users = get_all_users()
                 return render_template(
                     "home.html",
-                    users=users,
                     appointments=appointments,
                     doctors=doctors,
                     logged_user_id=logged_user_id,
@@ -139,7 +156,7 @@ def create_app():
         con = db.get_db()
         cur = con.cursor()
         cur.execute(
-            "INSERT INTO appointment ('user_id', 'doc_id', 'appointment_time', 'cause') VALUES (?, ?, ?, ?)",
+            "REPLACE INTO appointment ('user_id', 'doc_id', 'appointment_time', 'cause') VALUES (?, ?, ?, ?)",
             (
                 logged_user_id,
                 doctor_id,
@@ -148,6 +165,18 @@ def create_app():
             ),
         )
         con.commit()
+        db.close_db()
         return redirect("/home")
+
+    # def delete_appointment_when_passed():
+    #     con = db.get_db()
+    #     cur = con.cursor()
+    #     cur.execute(
+    #         "DELETE FROM 'appointment' WHERE 'appointment_time' < datetime('now')"
+    #     )
+    #     con.commit()
+    #     db.close_db()
+
+    # delete_appointment_when_passed()
 
     return app
