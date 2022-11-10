@@ -181,11 +181,11 @@ def create_app():
 
 
     @app.route("/validation",methods=['get','post'])
-    def validyouRegistration():
+    def register():
         lastName=request.form['lastname']
         firstName=request.form['firstname']
         username=request.form['username']
-        adress=request.form['adress']
+        address=request.form['address']
         tel=request.form['tel']
         email=request.form['email']
         pwd1=request.form['pwd1']
@@ -201,7 +201,7 @@ def create_app():
                 lastName,
                 username,
                 pwd1,
-                adress,
+                address,
                 email,
                 tel,
                 role
