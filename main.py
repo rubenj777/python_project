@@ -1,3 +1,5 @@
+from operator import methodcaller
+from tkinter import PhotoImage
 from flask import (
     Flask,
     render_template,
@@ -172,5 +174,43 @@ def create_app():
         con.commit()
         close_db()
         return redirect("/home")
+
+    @app.route("/registration",methods=['get','post'])
+    def registration():
+        return render_template("registration.html")
+
+
+    @app.route("/validation",methods=['get','post'])
+    def validyouRegistration():
+        lastName=request.form['lastname']
+        firstName=request.form['firstname']
+        username=request.form['username']
+        adress=request.form['adress']
+        tel=request.form['tel']
+        email=request.form['email']
+        pwd1=request.form['pwd1']
+        pwd2=request.form['pwd2']
+        role=1
+        conn=get_db()
+        cur=conn.cursor()
+        if(pwd1==pwd2 and pwd1!="" and pwd2!="" and firstName!="" and lastName!="" and email!="" and tel!=""):
+            cur.execute(
+            "INSERT INTO app_user ('firstname', 'lastname', 'username', 'password','address','email','phone','role') VALUES (?, ?, ?, ?,?, ?, ?, ?)",
+            (
+                firstName,
+                lastName,
+                username,
+                pwd1,
+                adress,
+                email,
+                tel,
+                role
+            ),
+        )
+            conn.commit()
+            #close_db()
+            return redirect("/home")   
+        else:
+            return render_template("registration.html")
 
     return app
