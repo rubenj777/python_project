@@ -208,7 +208,7 @@ def create_app():
             ),
         )
             conn.commit()
-            #close_db()
+            close_db()
             return redirect("/home")   
         else:
             return render_template("registration.html")
