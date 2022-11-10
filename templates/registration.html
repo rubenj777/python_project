@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Registration</title>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <center>
+
+
+        <style>
+            body {
+                margin: 0px;
+                padding: 0px;
+                background-color: azure;
+            }
+
+            fieldset {
+                margin-top: 50px;
+                width: 27%;
+                background-color:blue;
+                box-shadow: 5px 5px 20px 1px 10px rgb(85, 85, 85);
+                border: 0px;
+                padding-left: 10px;
+                border-radius: 10px 10px 10px 10px;
+                color: white;
+                height: 550px;
+            }
+
+            td {
+                letter-spacing: 1px;
+            }
+
+            h1 {
+                font-family: andalus;
+                letter-spacing: 3px;
+                text-align: center;
+                color: black;
+            }
+
+            hr {
+                border: 5px solide white;
+                border-radius: 10px;
+                width: 40%;
+            }
+
+            ul li {
+                margin-left: 20px;
+                color: white;
+            }
+
+            #submit {
+                margin: 10px 25px;
+                color: blue;
+                background-color: azure;
+                width: 80%;
+                font-size: 17px;
+                border-radius: 20px;
+                border: 1px solid azure;
+                padding: 7px;
+                padding-left: 20px;
+            }
+
+            #submit:hover {
+                color: azure;
+                background-color: blue;
+            }
+
+            input {
+                font-size: 16px;
+                border: solid black;
+                outline: none;
+                background: none;
+            }
+        </style>
+        <h1>Health Center Registration</h1>
+        <fieldset>
+            <form action="/validation" method="POST">
+                <h1>Registration</h1>
+                <hr>
+                <table>
+                    <tr>
+                        <td><label for="lastname">LastName : </label></td><br><br>
+                        <td><input type="text" name="lastname"><br><br></td>
+                    </tr>
+                    <tr>
+                        <td><label for="firstname">Firstname :</label></td>
+                        <td><input type="text" name="firstname"><br><br></td>
+                    </tr>
+                    <tr>
+                        <td><label for="username">Username :</label></td>
+                        <td><input type="text" name="username"><br><br></td>
+                    </tr>
+                    <tr>
+                        <td><label for="adress">Adress :</label></td>
+                        <td><input type="text" name="adress"><br><br></td>
+                    </tr>
+                    <tr>
+                        <td><label for="tel"> Tel :</label></td>
+                        <td><input type="tel" name="tel"><br><br></td>
+                    </tr>
+                    <tr>
+                        <td><label for="email">Email :</label></td>
+                        <td><input type="email" name="email"><br><br></td>
+                    </tr>
+                    <tr>
+                        <td><label for="pwd1">Password : </label></td>
+                        <td><input type="password" name="pwd1"><br><br></td>
+                    </tr>
+                    <tr>
+                        <td><label for="pwd2">Confirm your Password :</label></td><br>
+                        <td><input type="password" name="pwd2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="submit" id="submit" name="" value="registration"></td>
+                    </tr>
+                </table>
+            </form>
+        </fieldset>
+
+</body>
+</center>
+
+</html>
