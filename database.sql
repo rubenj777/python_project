@@ -1,6 +1,3 @@
--- DROP TABLE app_user;
--- DROP TABLE appointment;
-
 CREATE TABLE IF NOT EXISTS app_user(
    id INTEGER PRIMARY KEY AUTOINCREMENT,
    firstName TEXT,
@@ -23,9 +20,3 @@ CREATE TABLE IF NOT EXISTS appointment(
    FOREIGN KEY(user_id) REFERENCES app_user(id),
    FOREIGN KEY(doc_id) REFERENCES app_user(id)
 );
-
-
--- INSERT INTO app_user ('firstName', 'lastName', 'username', 'password', 'address', 'email', 'phone', 'role') VALUES ('ruben', 'jallifier', 'rub', 'mdp', 'lyon', 'mail', '06', '1');
--- INSERT INTO app_user ('firstName', 'lastName', 'username', 'password', 'address', 'email', 'phone', 'role') VALUES ('docteur', 'jean', 'jean', 'mdp', 'lyon', 'mail', '06', '2');
-
-
