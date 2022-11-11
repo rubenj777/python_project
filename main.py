@@ -222,11 +222,9 @@ def create_app():
         user_id=request.form["logged_user_id"]
         conn=get_db()
         cur=conn.cursor()
-        if(user_id!=""):
-            cur.execute("DELETE FROM appointment WHERE doc_id=? and user_id=?",(doctor_id,user_id))
-            conn.commit()
-            close_db()
-            return redirect("/home")
-        return render_template("registration.html")
+        cur.execute("DELETE FROM appointment WHERE doc_id=? and user_id=?",(doctor_id,user_id))
+        conn.commit()
+        close_db()
+        return redirect("/home")
         
     return app
