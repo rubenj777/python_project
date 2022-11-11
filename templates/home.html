@@ -48,6 +48,18 @@
             <div class="card-body">
                 <p>{{ appointment.appointment_time | date }}</p>
                 <p>{{ appointment.firstName }} {{ appointment.lastName }}, {{ appointment.specialization }}</p>
+                <form action="/cancelAppointment" method="post">
+                    <tr>
+                        <td>
+                            <button type="submit" name="cancel">Cancel your next appointment</button>
+                        </td>
+                        <td>
+                            <input type="hidden" value="{{ appointment.user_id}}" name="logged_user_id">
+                            <input type="hidden" value="{{ appointment.doc_id }}" name="doc_id">
+                        </td>
+                    </tr>
+                </form>
+               
             </div>
     </div>
     {% endif %}

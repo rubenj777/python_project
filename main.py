@@ -1,5 +1,7 @@
 from operator import methodcaller
 from tkinter import PhotoImage
+from tkinter.messagebox import RETRY
+from colorama import Cursor
 from flask import (
     Flask,
     render_template,
@@ -212,5 +214,19 @@ def create_app():
             return redirect("/home")   
         else:
             return render_template("registration.html")
+    
 
+    @app.route("/cancelAppointment", methods=['get','post'])
+    def cancelation():
+        doctor_id=request.form["doc_id"]
+        user_id=request.form["logged_user_id"]
+        conn=get_db()
+        cur=conn.cursor()
+        if(user_id!=""):
+            cur.execute("DELETE FROM appointment WHERE doc_id=? and user_id=?",(doctor_id,user_id))
+            conn.commit()
+            close_db()
+            return redirect("/home")
+        return render_template("registration.html")
+        
     return app
